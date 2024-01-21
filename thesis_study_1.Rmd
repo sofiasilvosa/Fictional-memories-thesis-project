@@ -1,0 +1,1152 @@
+---
+title: "Thesis Study 1"
+output: html_document
+date: "2024-01-10"
+---
+
+
+```{r setup, include=FALSE}
+
+
+
+library(tidyverse)
+library (dplyr)
+library(tidyr)
+library(lme4)
+library(ggplot2)
+library(lmerTest)
+library(viridis)
+library(hrbrthemes)
+library(fmsb)
+library(colormap)
+
+
+data <- read.csv("Study 1 data for r.csv")
+
+```
+
+#AMQ Variables
+
+
+```{r desriptive stats- amq-see}
+
+hist(data$AMQ_see)
+
+mean(data$AMQ_see)
+sd(data$AMQ_see)
+
+
+```
+
+
+
+```{r amq-see}
+
+
+
+model_see <- glmer(AMQ_see ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition + (1|Participant), data=data, family="gaussian")
+summary(model_see)
+
+
+figure_see <- ggplot(data, aes(x=memory_type, y=AMQ_see)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_see
+
+```
+
+
+Memory condition and rehearsal are significant.
+Interaction is aso significant.
+
+
+```{r ttest amq}
+
+data_ttest_1 <- data %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_ttest_2 <- data %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_ttest <- bind_rows(data_ttest_1, data_ttest_2)  
+data_ttest$condition <- paste(data_ttest$memory_type, data_ttest$rehearsed_condition, sep="_")
+
+ttest_see <- t.test(AMQ_see ~ condition, data=data_ttest)
+ttest_see
+```
+Independent sample t-test is not significant different
+
+
+```{r desriptive stats- amq-hear}
+
+hist(data$AMQ_hear)
+
+mean(data$AMQ_hear)
+sd(data$AMQ_hear)
+
+
+```
+
+
+```{r amq-hear}
+
+model_see <- lm(AMQ_hear ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_see)
+
+figure_hear <- ggplot(data, aes(x=memory_type, y=AMQ_hear)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_hear
+
+```
+
+significant effect of rehearsed condition
+no sigfnicant effect of memory type 
+no interaction
+
+
+
+```{r ttest amq-hear}
+
+data_ttest_2 <- data %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_ttest_2 <- data %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_ttest <- bind_rows(data_ttest_1, data_ttest_2)  
+data_ttest$condition <- paste(data_ttest$memory_type, data_ttest$rehearsed_condition, sep="_")
+
+ttest_hear <- t.test(AMQ_hear ~ condition, data=data_ttest)
+ttest_hear
+```
+significant t-test! Higher for fictional memories than personal non-reherased memories.
+
+```{r desriptive stats- amq-accuary}
+
+hist(data$AMQ_Accuracy)
+
+mean(data$AMQ_Accuracy)
+sd(data$AMQ_Accuracy)
+
+
+```
+
+```{r amq-accuracy}
+
+model_see <- lm(AMQ_Accuracy ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_see)
+
+figure_see <- ggplot(data, aes(x=memory_type, y= AMQ_Accuracy)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_see
+
+
+
+
+
+```
+
+
+
+```{r ttest amq-}
+
+
+
+ttest_acc <- t.test(AMQ_Accuracy ~ condition, data=data_ttest)
+ttest_acc
+```
+
+no significant differece found in t-test
+
+
+
+```{r amq-live}
+
+model_live <- lm(AMQ_Live ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_live)
+
+figure_live <- ggplot(data, aes(x=memory_type, y= AMQ_Live)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_live
+
+
+
+
+
+```
+No interaction
+significant differebce between memory type and rehersal
+
+```{r ttest amq-live}
+
+
+
+ttest_live <- t.test(AMQ_Live ~ condition, data=data_ttest)
+ttest_live
+```
+Not a significant t-test (mean for personal is higher)
+
+
+
+```{r amq-strength}
+
+model_str <- lm(AMQ_Strength ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_str)
+
+figure_str <- ggplot(data, aes(x=memory_type, y= AMQ_Strength)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_str
+
+
+
+
+
+```
+
+no interaction
+main effect of rehearsed condition
+
+
+
+```{r ttest amq-str}
+
+
+
+ttest_str <- t.test(AMQ_Strength ~ condition, data=data_ttest)
+ttest_str
+```
+
+Significant difference!
+Strength of emotions was stronger for rehearsed fictional memories than non-rehearsed personal memories
+
+
+
+```{r amq-positivity}
+
+model_pos <- lm(AMQ_Positivity ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_pos)
+
+figure_pos <- ggplot(data, aes(x=memory_type, y= AMQ_Positivity)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_pos
+
+
+
+
+
+```
+
+nothing significant :0
+but we can see that rehersal 0 has lower positivity levels than rehersa 1 memories
+
+
+
+```{r ttest amq-positivity}
+
+
+
+ttest_pos <- t.test(AMQ_Positivity ~ condition, data=data_ttest)
+ttest_pos
+```
+
+
+no sig diffenrece
+
+fiction 1 > personal 0 
+
+
+
+
+```{r amq-negativity}
+
+model_neg <- lm(AMQ_Negativity ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_neg)
+
+figure_neg <- ggplot(data, aes(x=memory_type, y= AMQ_Negativity)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_neg
+
+
+
+
+
+```
+
+no sig difference either (different from what we saw in brenda's study 2...)
+
+
+
+
+```{r ttest amq-positivity}
+
+
+
+ttest_neg <- t.test(AMQ_Negativity ~ condition, data=data_ttest)
+ttest_neg
+```
+^^ almost the same
+
+
+
+```{r amq-intensity}
+
+model_intense <- lm(AMQ_Intensity ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_intense)
+
+figure_intense <- ggplot(data, aes(x=memory_type, y= AMQ_Intensity)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_intense
+
+
+
+
+
+```
+
+
+significant effect of condition!
+no interaction
+
+
+
+
+```{r ttest amq-intensity}
+
+
+
+ttest_int <- t.test(AMQ_Intensity ~ condition, data=data_ttest)
+ttest_int
+```
+Significant difference according to t-test
+
+
+
+```{r tale-1}
+
+model_tale1 <- lm(TALE_1 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale1)
+
+figure_tale1 <- ggplot(data, aes(x=memory_type, y= TALE_1)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_tale1
+
+
+
+
+
+```
+
+no main effects
+no interaction
+
+
+
+
+
+
+```{r ttest TALE1}
+
+
+
+ttest_TALE_1 <- t.test(TALE_1 ~ condition, data=data_ttest)
+ttest_TALE_1
+```
+No sig difference
+averages are virtually the same
+
+
+
+```{r tale-2}
+
+model_tale2 <- lm(TALE_2 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale2)
+
+figure_tale2 <- ggplot(data, aes(x=memory_type, y= TALE_2)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_tale2
+
+
+
+
+
+```
+no main effects
+no interaction
+
+
+
+
+```{r ttest TALE2}
+
+
+
+ttest_TALE_2 <- t.test(TALE_2 ~ condition, data=data_ttest)
+ttest_TALE_2
+```
+no sig diff (averages are virtually the same)
+
+
+
+
+
+```{r tale-4}
+
+
+
+
+#for these memories we are not getting a normal distribution whatsover. data is heavily skewed
+
+hist(data$TALE_4)
+
+mean(data$TALE_4)
+sd(data$TALE_4)
+
+
+
+model_tale4 <- lm(TALE_4 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale4)
+
+figure_TALE4 <- ggplot(data, aes(x=memory_type, y= TALE_4)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_TALE4
+
+
+
+
+
+```
+
+
+
+
+
+
+
+```{r ttest TALE4}
+
+
+
+ttest_TALE_4 <- t.test(TALE_4 ~ condition, data=data_ttest)
+ttest_TALE_4
+```
+no sig diff (well duh!)
+
+
+
+
+```{r tale-5}
+
+
+
+#for these memories we are not getting a normal distribution whatsover. data is heavily skewed
+
+hist(data$TALE_5)
+
+mean(data$TALE_5)
+sd(data$TALE_5)
+
+
+
+model_tale5 <- lm(TALE_5 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale5)
+
+figure_TALE5 <- ggplot(data, aes(x=memory_type, y= TALE_5)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_TALE5
+
+
+
+
+
+```
+
+
+
+
+```{r ttest TALE5}
+
+
+
+ttest_TALE_5 <- t.test(TALE_5 ~ condition, data=data_ttest)
+ttest_TALE_5
+```
+
+
+
+
+```{r tale-6}
+
+
+
+#for these memories we are not getting a normal distribution whatsover. data is heavily skewed
+
+hist(data$TALE_6)
+
+mean(data$TALE_6)
+sd(data$TALE_6)
+
+
+model_tale6 <- lm(TALE_6 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale6)
+
+figure_TALE6 <- ggplot(data, aes(x=memory_type, y= TALE_6)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_TALE6
+
+
+
+```
+no interaction nor main effects
+
+
+
+
+
+```{r ttest TALE5}
+
+
+
+ttest_TALE_6 <- t.test(TALE_6 ~ condition, data=data_ttest)
+ttest_TALE_6
+```
+no sig difference (bruh)
+
+
+
+
+```{r CES1}
+
+model_CES1 <- lm(CES_1 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_CES1)
+
+figure_CES1 <- ggplot(data, aes(x=memory_type, y= CES_1)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_CES1
+
+
+
+```
+small effect of rehearsed
+
+
+
+```{r ttest ces1}
+
+
+
+ttest_CES1 <- t.test(CES_1 ~ condition, data=data_ttest)
+ttest_CES1
+```
+no significant difference
+
+
+
+```{r CES2}
+
+model_CES2 <- lm(CES_2 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_CES2)
+
+figure_CES2 <- ggplot(data, aes(x=memory_type, y= CES_2)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_CES2
+
+
+
+```
+
+no significant predictors
+
+
+
+
+```{r ttest ces2}
+
+
+
+ttest_CES2 <- t.test(CES_2 ~ condition, data=data_ttest)
+ttest_CES2
+```
+no significant difference between two means
+
+
+```{r CES3}
+
+model_CES3 <- lm(CES_3 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_CES3)
+
+figure_CES3 <- ggplot(data, aes(x=memory_type, y= CES_3)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_CES3
+
+
+
+data %>%
+filter(memory_type == "personal" & rehearsed_condition == 1) %>%
+summarize(mean(CES_3))
+
+
+
+
+data %>%
+filter(memory_type == "personal" & rehearsed_condition == 0) %>%
+summarize(mean(CES_3))
+
+
+
+
+
+data %>%
+filter(memory_type == "fiction" & rehearsed_condition == 1) %>%
+summarize(mean(CES_3))
+
+
+
+
+data %>%
+filter(memory_type == "fiction" & rehearsed_condition == 0) %>%
+summarize(mean(CES_3))
+
+
+
+#is there an easier way to get this frequency table?
+
+
+
+```
+there is an interaction!
+(not sure what it means though lol)
+
+
+
+
+```{r ttest ces3}
+
+
+
+ttest_CES3 <- t.test(CES_3 ~ condition, data=data_ttest)
+ttest_CES3
+```
+same means! (no significance at all!)
+
+
+```{r CES4}
+
+model_CES4 <- lm(CES_4 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_CES4)
+
+figure_CES4 <- ggplot(data, aes(x=memory_type, y= CES_4)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_CES4
+
+
+
+```
+significant effect of rehearsed!
+no main effect of memory type
+no interaction
+
+# tale functions but with directive, social and self
+
+
+```{r tale-directive}
+
+
+tale_directive <- data %>% 
+  mutate(directive_TALE= (TALE_1 + TALE_6)/2)
+
+model_directive <- lm(directive_TALE ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=tale_directive)
+summary(model_directive)
+
+figure_tale_directive <- ggplot(tale_directive, aes(x=memory_type, y= directive_TALE)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_tale_directive
+
+
+
+
+
+```
+nothing significant
+- no main effects nor interactions
+
+
+
+
+
+
+```{r ttest tale directive}
+
+
+
+
+
+
+data_directive_1 <- tale_directive %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_directive_2 <- tale_directive %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_directive <- bind_rows(data_directive_1, data_directive_2)  
+data_directive$condition <- paste(data_directive$memory_type, data_directive$rehearsed_condition, sep="_")
+
+ttest_directive <- t.test( directive_TALE ~ condition, data=data_directive)
+ttest_directive
+
+
+```
+
+
+
+```{r tale-self}
+
+
+tale_self <- data %>% 
+  mutate(self_TALE= (TALE_2 + TALE_4)/2)
+
+model_self <- lm(self_TALE ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=tale_self)
+summary(model_self)
+
+figure_tale_self <- ggplot(tale_self, aes(x=memory_type, y= self_TALE)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_tale_self
+
+
+
+
+
+```
+no main effects and no interaction
+
+
+
+```{r ttest tale self}
+
+
+
+
+
+
+data_self_1 <- tale_self %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_self_2 <- tale_self %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_self <- bind_rows(data_self_1, data_self_2)  
+data_self$condition <- paste(data_self$memory_type, data_self$rehearsed_condition, sep="_")
+
+ttest_self <- t.test(self_TALE ~ condition, data=data_self)
+ttest_self
+
+
+```
+
+
+
+# social tale function
+
+
+
+```{r tale-5}
+
+
+
+#for these memories we are not getting a normal distribution whatsover. data is heavily skewed
+
+hist(data$TALE_5)
+
+mean(data$TALE_5)
+sd(data$TALE_5)
+
+
+
+model_tale5 <- lm(TALE_5 ~ rehearsed_condition + memory_type + memory_type:rehearsed_condition, data=data)
+summary(model_tale5)
+
+figure_TALE5 <- ggplot(data, aes(x=memory_type, y= TALE_5)) +
+  facet_grid(~as.factor(rehearsed_condition)) +
+  geom_boxplot()
+
+figure_TALE5
+
+
+
+
+
+```
+no main effects or interaction!
+
+
+```{r ttest TALE5}
+
+
+
+ttest_TALE_5 <- t.test(TALE_5 ~ condition, data=data_ttest)
+ttest_TALE_5
+
+```
+no significant difference between the two groups
+
+
+
+```{r create spider plot}
+
+  # https://www.data-to-viz.com/caveat/spider.html
+
+
+
+# Create data
+set.seed(1)
+data <-as.data.frame(matrix( c( sample( 2: 6 , 9 , replace=T), sample( 2:6 , 9 , replace=T)) , ncol=9, byrow=TRUE))
+colnames(data) <- c("rehersal" , "see" , "hear" , "accuracy" , "live", "strength" , "positivity" , "negativity", "intensity" )
+
+
+data <-rbind(rep(6,9) , rep(0,9) , data)
+
+
+
+data <-rbind(rep(20,10) , rep(0,10) , data)
+
+# Prepare color
+colors_border=c( rgb(0.2,0.5,0.5,0.9), rgb(0.8,0.2,0.5,0.9)  )
+colors_in=c( rgb(0.2,0.5,0.5,0.4), rgb(0.8,0.2,0.5,0.4)  )
+
+# Custom the radarChart !
+radarchart( data, axistype=1, 
+
+  #custom polygon
+  pcol=colors_border , pfcol=colors_in , plwd=4, plty=1 , 
+
+  #custom the grid
+  cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,20,5), cglwd=1.1,
+
+  #custom labels
+  vlcex=0.8 
+  )
+# Legend
+legend(x=0.85, y=1, legend = c("Shirley", "Sonia"), bty = "n", pch=20 , col=colors_border , text.col = "black", cex=0.9, pt.cex=1.6)
+
+
+```
+
+```{r means-sds}
+
+
+means_data <- data %>% 
+  summarize(mean_AMQsee= mean(AMQ_see), se_AMQsee= (sd(AMQ_see)/ (n() -1)), 
+          mean_AMQhear= mean(AMQ_hear), se_AMQhear= (sd(AMQ_hear)/ (n() -1) ),
+          mean_AMQlive= mean(AMQ_Live), se_AMQlive= (sd(AMQ_Live)/ (n() -1) ),
+          mean_AMQstrength= mean(AMQ_Strength), se_AMQstrength= (sd(AMQ_Strength)/ (n() -1) ),
+          mean_AMQpositivity= mean(AMQ_Positivity), se_AMQpositivity= (sd(AMQ_Positivity)/ (n() -1) ),
+          mean_AMQnegativity= mean(AMQ_Negativity), se_AMQnegativity= (sd(AMQ_Negativity)/ (n() -1) ),
+          mean_AMQaccuracy= mean(AMQ_Accuracy), se_AMQaccuracy= (sd(AMQ_Accuracy)/ (n() -1) ),
+          mean_AMQrehersal= mean(AMQ_Rehersal), se_AMQrehersal= (sd(AMQ_Rehersal)/ (n() -1) ),
+          mean_AMQintensity= mean(AMQ_Intensity),se_AMQintensity = (sd(AMQ_Intensity)/ (n() -1)))
+
+
+
+means_data_long <- pivot_longer(means_data, everything(), names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide <- pivot_wider(means_data_long, names_from = measure, values_from = value)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide, aes(x=mean, y= variable)) +
+  geom_point(size= 3.5, color= 'lightblue') +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se), color="lightblue", width= 0.5, size= 1) +
+  #coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+  
+  
+
+
+
+```
+
+
+
+```{r means-sds-condition}
+
+
+means_data <- data %>% 
+group_by(memory_type) %>% 
+
+  summarize(mean_AMQsee= mean(AMQ_see), se_AMQsee= (sd(AMQ_see)/ (n() -1)), 
+          mean_AMQhear= mean(AMQ_hear), se_AMQhear= (sd(AMQ_hear)/ (n() -1) ),
+             mean_AMQlive= mean(AMQ_Live), se_AMQlive= (sd(AMQ_Live)/ (n() -1) ),
+          mean_AMQstrength= mean(AMQ_Strength), se_AMQstrength= (sd(AMQ_Strength)/ (n() -1) ),
+          mean_AMQpositivity= mean(AMQ_Positivity), se_AMQpositivity= (sd(AMQ_Positivity)/ (n() -1) ),
+          mean_AMQnegativity= mean(AMQ_Negativity), se_AMQnegativity= (sd(AMQ_Negativity)/ (n() -1) ),
+          mean_AMQaccuracy= mean(AMQ_Accuracy), se_AMQaccuracy= (sd(AMQ_Accuracy)/ (n() -1) ),
+          mean_AMQrehersal= mean(AMQ_Rehersal), se_AMQrehersal= (sd(AMQ_Rehersal)/ (n() -1) ),
+          mean_AMQintensity= mean(AMQ_Intensity),se_AMQintensity = (sd(AMQ_Intensity)/ (n() -1)))
+
+
+
+means_data_long <- pivot_longer(means_data, -memory_type, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide <- pivot_wider(means_data_long, names_from = measure, values_from = value)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide, aes(x=mean, y= variable, color= memory_type)) +
+  geom_point(size= 3.5) +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se),  width= 0.5, size= 1) +
+  coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+
+
+
+
+
+```
+```{r facet-grid-graph}
+
+
+means_data_rehearsed <- data %>% 
+  filter(rehearsed_condition== 1)  %>% 
+group_by(memory_type) %>% 
+
+  summarize(mean_AMQsee= mean(AMQ_see), se_AMQsee= (sd(AMQ_see)/ (n() -1)), 
+          mean_AMQhear= mean(AMQ_hear), se_AMQhear= (sd(AMQ_hear)/ (n() -1) ),
+             mean_AMQlive= mean(AMQ_Live), se_AMQlive= (sd(AMQ_Live)/ (n() -1) ),
+          mean_AMQstrength= mean(AMQ_Strength), se_AMQstrength= (sd(AMQ_Strength)/ (n() -1) ),
+          mean_AMQpositivity= mean(AMQ_Positivity), se_AMQpositivity= (sd(AMQ_Positivity)/ (n() -1) ),
+          mean_AMQnegativity= mean(AMQ_Negativity), se_AMQnegativity= (sd(AMQ_Negativity)/ (n() -1) ),
+          mean_AMQaccuracy= mean(AMQ_Accuracy), se_AMQaccuracy= (sd(AMQ_Accuracy)/ (n() -1) ),
+          mean_AMQrehersal= mean(AMQ_Rehersal), se_AMQrehersal= (sd(AMQ_Rehersal)/ (n() -1) ),
+          mean_AMQintensity= mean(AMQ_Intensity),se_AMQintensity = (sd(AMQ_Intensity)/ (n() -1)))
+
+
+
+means_data_long_rehearsed <- pivot_longer(means_data_rehearsed, -memory_type, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide_rehearsed <- pivot_wider(means_data_long_rehearsed, names_from = measure, values_from = value)
+means_data_wide_rehearsed$condition <- "rehearsed"
+
+
+
+means_data_nonreh <- data %>% 
+  filter(rehearsed_condition== 0) %>%
+group_by(memory_type) %>% 
+
+  summarize(mean_AMQsee= mean(AMQ_see), se_AMQsee= (sd(AMQ_see)/ (n() -1)), 
+          mean_AMQhear= mean(AMQ_hear), se_AMQhear= (sd(AMQ_hear)/ (n() -1) ),
+             mean_AMQlive= mean(AMQ_Live), se_AMQlive= (sd(AMQ_Live)/ (n() -1) ),
+          mean_AMQstrength= mean(AMQ_Strength), se_AMQstrength= (sd(AMQ_Strength)/ (n() -1) ),
+          mean_AMQpositivity= mean(AMQ_Positivity), se_AMQpositivity= (sd(AMQ_Positivity)/ (n() -1) ),
+          mean_AMQnegativity= mean(AMQ_Negativity), se_AMQnegativity= (sd(AMQ_Negativity)/ (n() -1) ),
+          mean_AMQaccuracy= mean(AMQ_Accuracy), se_AMQaccuracy= (sd(AMQ_Accuracy)/ (n() -1) ),
+          mean_AMQrehersal= mean(AMQ_Rehersal), se_AMQrehersal= (sd(AMQ_Rehersal)/ (n() -1) ),
+          mean_AMQintensity= mean(AMQ_Intensity),se_AMQintensity = (sd(AMQ_Intensity)/ (n() -1)))
+
+
+
+means_data_long_nonreh <- pivot_longer(means_data_nonreh, -memory_type, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide_nonreh <- pivot_wider(means_data_long_nonreh, names_from = measure, values_from = value)
+means_data_wide_nonreh$condition <- "non-rehearsed"
+
+means_data_wide_all <- bind_rows(means_data_wide_rehearsed, means_data_wide_nonreh)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide_all, aes(x=mean, y= variable, color= memory_type)) +
+  facet_grid(~condition) + 
+  geom_point(size= 3.5) +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se),  width= 0.5, size= 1) +
+  coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+
+
+
+
+
+```
+
+
+
+```{r ttest graph AMQ}
+
+data_ttest_1 <- data %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_ttest_2 <- data %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_ttest <- bind_rows(data_ttest_1, data_ttest_2)  
+data_ttest$condition <- paste(data_ttest$memory_type, data_ttest$rehearsed_condition, sep="_")
+
+data_ttest
+
+
+
+#develop graph
+
+means_data <- data_ttest %>% 
+group_by(condition) %>% 
+
+  summarize(mean_AMQsee= mean(AMQ_see), se_AMQsee= (sd(AMQ_see)/ (n() -1)), 
+          mean_AMQhear= mean(AMQ_hear), se_AMQhear= (sd(AMQ_hear)/ (n() -1) ),
+             mean_AMQlive= mean(AMQ_Live), se_AMQlive= (sd(AMQ_Live)/ (n() -1) ),
+          mean_AMQstrength= mean(AMQ_Strength), se_AMQstrength= (sd(AMQ_Strength)/ (n() -1) ),
+          mean_AMQpositivity= mean(AMQ_Positivity), se_AMQpositivity= (sd(AMQ_Positivity)/ (n() -1) ),
+          mean_AMQnegativity= mean(AMQ_Negativity), se_AMQnegativity= (sd(AMQ_Negativity)/ (n() -1) ),
+          mean_AMQaccuracy= mean(AMQ_Accuracy), se_AMQaccuracy= (sd(AMQ_Accuracy)/ (n() -1) ),
+          mean_AMQrehersal= mean(AMQ_Rehersal), se_AMQrehersal= (sd(AMQ_Rehersal)/ (n() -1) ),
+          mean_AMQintensity= mean(AMQ_Intensity),se_AMQintensity = (sd(AMQ_Intensity)/ (n() -1)))
+
+
+
+means_data_long <- pivot_longer(means_data, -condition, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide <- pivot_wider(means_data_long, names_from = measure, values_from = value)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide, aes(x=mean, y= variable, color= condition)) +
+  geom_point(size= 3.5) +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se),  width= 0.5, size= 1) +
+  coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+
+
+
+```
+
+
+
+```{r tale-facet-grid-descriptives-graph}
+
+
+
+data_TALE <- data %>% 
+    mutate(directive_TALE= (TALE_1 + TALE_6)/2) %>% 
+    mutate(self_TALE= (TALE_2 + TALE_4)/2) %>% 
+    mutate(social_TALE= (TALE_5))
+
+
+
+means_data_rehearsed <- data_TALE %>% 
+  filter(rehearsed_condition== 1)  %>% 
+group_by(memory_type) %>% 
+
+  summarize(mean_directive= mean(directive_TALE), se_directive= (sd(directive_TALE)/ (n() -1)), 
+          mean_self= mean(self_TALE), se_self= (sd(self_TALE)/ (n() -1) ),
+             mean_social= mean(social_TALE), se_social= (sd(social_TALE)/ (n() -1) ))
+
+
+means_data_long_rehearsed <- pivot_longer(means_data_rehearsed, -memory_type, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide_rehearsed <- pivot_wider(means_data_long_rehearsed, names_from = measure, values_from = value)
+means_data_wide_rehearsed$condition <- "rehearsed"
+
+
+
+means_data_nonreh <- data_TALE %>% 
+  filter(rehearsed_condition== 0) %>%
+group_by(memory_type) %>% 
+ summarize(mean_directive= mean(directive_TALE), se_directive= (sd(directive_TALE)/ (n() -1)), 
+          mean_self= mean(self_TALE), se_self= (sd(self_TALE)/ (n() -1) ),
+             mean_social= mean(social_TALE), se_social= (sd(social_TALE)/ (n() -1) ))
+
+
+means_data_long_nonreh <- pivot_longer(means_data_nonreh, -memory_type, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide_nonreh <- pivot_wider(means_data_long_nonreh, names_from = measure, values_from = value)
+means_data_wide_nonreh$condition <- "non-rehearsed"
+
+means_data_wide_all <- bind_rows(means_data_wide_rehearsed, means_data_wide_nonreh)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide_all, aes(x=mean, y= variable, color= memory_type)) +
+  facet_grid(~condition) + 
+  geom_point(size= 3.5) +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se),  width= 0.5, size= 1) +
+  coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+
+
+
+
+
+```
+
+
+```{r TALE-ttest- graph}
+
+data_ttest_1_tale <- data_TALE %>% 
+  filter(rehearsed_condition==0 & memory_type=="personal") 
+data_ttest_2_tale <- data_TALE %>%
+  filter(rehearsed_condition==1 & memory_type=="fiction")
+data_ttest <- bind_rows(data_ttest_1_tale, data_ttest_2_tale)  
+data_ttest$condition <- paste(data_ttest$memory_type, data_ttest$rehearsed_condition, sep="_")
+
+data_ttest
+
+
+
+#develop graph
+
+means_data <- data_ttest %>% 
+group_by(condition) %>% 
+
+    summarize(mean_directive= mean(directive_TALE), se_directive= (sd(directive_TALE)/ (n() -1)), 
+          mean_self= mean(self_TALE), se_self= (sd(self_TALE)/ (n() -1) ),
+             mean_social= mean(social_TALE), se_social= (sd(social_TALE)/ (n() -1) ))
+
+
+means_data_long <- pivot_longer(means_data, -condition, names_to= c("measure", 'variable'), names_sep= "_", values_to = "value") 
+
+means_data_wide <- pivot_wider(means_data_long, names_from = measure, values_from = value)
+
+
+library(ggthemes)
+
+ggplot(means_data_wide, aes(x=mean, y= variable, color= condition)) +
+  geom_point(size= 3.5) +
+  geom_errorbar(aes(xmax=mean + se , xmin= mean- se),  width= 0.5, size= 1) +
+  coord_cartesian(xlim=c(1,7)) +
+  theme_classic()
+
+
+
+```
+
+The only different one is social (higher for rehearsed fictional memories)
+Directive and self are not significantly different
+
